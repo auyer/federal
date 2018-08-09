@@ -16,7 +16,7 @@ type compiler struct {
 func CompileFile(fname string, parsed *ast.Source) {
 
 	var c compiler
-	fp, err := os.Create(fname + ".c")
+	fp, err := os.Create(fname + ".go")
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -76,9 +76,11 @@ func (c *compiler) compBinaryExpr(b *ast.BinaryExpr) int {
 }
 
 func (c *compiler) compFile(f *ast.Source) {
-	fmt.Fprintln(c.fp, "#include <stdio.h>")
-	fmt.Fprintln(c.fp, "int main(void) {")
-	fmt.Fprintf(c.fp, "printf(\"%%d\\n\", %d);\n", c.compNode(f.Root))
-	fmt.Fprintln(c.fp, "return 0;")
+	fmt.Fprintln(c.fp, "package main")
+	fmt.Fprintln(c.fp, `import "fmt"`)
+	fmt.Fprintln(c.fp, `import "strconv"`)
+	fmt.Fprintln(c.fp, "func main() {")
+	fmt.Fprintf(c.fp, "fmt.Println(strconv.Itoa(%d))\n", c.compNode(f.Root))
+	// fmt.Fprintln(c.fp, "return 0;")
 	fmt.Fprintln(c.fp, "}")
 }

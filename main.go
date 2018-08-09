@@ -13,11 +13,10 @@ import (
 	"github.com/auyer/federal/parse"
 )
 
-var calcExt = ".fed"
+var fedExt = ".fed"
 
 func cleanup(filename string) {
-	os.Remove(filename + ".c")
-	os.Remove(filename + ".o")
+	os.Remove(filename + ".go")
 }
 
 func fatal(args ...interface{}) {
@@ -50,12 +49,12 @@ func main() {
 		flag.PrintDefaults()
 	}
 	var (
-		cc   = flag.String("cc", "gcc", "C compiler to use")
-		cfl  = flag.String("cflags", "-c -std=gnu99", "C compiler flags")
-		cout = flag.String("cout", "--output=", "C compiler output flag")
-		ld   = flag.String("ld", "gcc", "linker")
-		ldf  = flag.String("ldflags", "", "linker flags")
-		ver  = flag.Bool("version", false, "Print version number and exit")
+		cc   = flag.String("cc", "go", "GO Compiler to use")
+		cfl  = flag.String("cflags", "build", "Go Compiler Flags")
+		keep = flag.Bool("keep", false, "Keep Intermediary files")
+		ir   = flag.Bool("ir", false, "Stop at IR")
+		// ldf  = flag.String("ldflags", "", "linker flags")
+		ver = flag.Bool("version", false, "Print version number and exit")
 	)
 	flag.Parse()
 
@@ -70,7 +69,7 @@ func main() {
 
 	filename := flag.Arg(0)
 
-	if filepath.Ext(filename) != calcExt {
+	if filepath.Ext(filename) != fedExt {
 		fatal("Source files should have the '.fed' extension")
 	}
 
@@ -79,7 +78,7 @@ func main() {
 		fatal(err)
 	}
 
-	filename = filename[:len(filename)-len(calcExt)]
+	filename = filename[:len(filename)-len(fedExt)]
 	fmt.Println("Parsing File")
 	f := parse.ParseFile(filename, string(src))
 	if f == nil {
@@ -90,21 +89,19 @@ func main() {
 
 	comp.CompileFile(filename, f)
 
+	if *ir {
+		fmt.Println("> Stopping at Intermediary Language")
+		os.Exit(1)
+	}
 	/* compile to object code */
 	var out []byte
-	args := make_args(*cfl, *cout+filename+".o", filename+".c")
+	args := make_args(*cfl, filename+".go")
 	out, err = exec.Command(*cc, strings.Split(args, " ")...).CombinedOutput()
 	if err != nil {
 		cleanup(filename)
 		fatal(string(out), err)
 	}
-
-	/* link to executable */
-	args = make_args(*ldf, *cout+filename, filename+".o")
-	out, err = exec.Command(*ld, strings.Split(args, " ")...).CombinedOutput()
-	if err != nil {
+	if !*keep {
 		cleanup(filename)
-		fatal(string(out), err)
 	}
-	cleanup(filename)
 }
