@@ -11,7 +11,7 @@ import (
 func ParseFile(filename, src string) *ast.Source {
 	var p parser
 	p.init(filename, src)
-	f := p.parseFile()
+	f := p.parseSource()
 	if p.errors.Count() > 0 {
 		p.errors.Print()
 		return nil
@@ -155,7 +155,7 @@ func (p *parser) parseExpr(pos token.Pos) ast.Expr {
 	return expr
 }
 
-func (p *parser) parseFile() *ast.Source {
+func (p *parser) parseSource() *ast.Source {
 	var expr ast.Expr
 	expr = p.parseGenExpr()
 	if p.tok != token.EOF {
