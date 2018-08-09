@@ -24,10 +24,6 @@ func (f *Source) AddLine(offset int) {
 	}
 }
 
-func (f *Source) Base() int {
-	return f.base
-}
-
 func (f *Source) Pos(offset int) Pos {
 	if offset < 0 || offset >= len(f.src) {
 		panic("illegal file offset")
