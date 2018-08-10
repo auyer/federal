@@ -139,7 +139,6 @@ func (p *parser) parseExprDo() ast.Expr {
 	expr := p.parseExpr(p.expect(token.LPAREN))
 	_ = p.expect(token.RPAREN)
 	return expr
-
 }
 
 func (p *parser) parseExpr(pos token.Pos) ast.Expr {

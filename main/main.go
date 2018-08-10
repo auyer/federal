@@ -79,13 +79,13 @@ func main() {
 	}
 
 	filename = filename[:len(filename)-len(fedExt)]
-	fmt.Println("Parsing File")
+	fmt.Println("> Parsing File")
 	f := parse.ParseFile(filename, string(src))
 	if f == nil {
 		os.Exit(1)
 	}
 
-	fmt.Println("Compiling:", filename)
+	fmt.Println("> Compiling:", filename)
 
 	comp.CompileFile(filename, f)
 
