@@ -38,7 +38,7 @@ func make_args(options ...string) string {
 }
 
 func printVersion() {
-	fmt.Fprintln(os.Stderr, "v 0.1")
+	fmt.Fprintln(os.Stderr, "federal v 0.1")
 }
 
 func main() {
@@ -53,8 +53,7 @@ func main() {
 		cfl  = flag.String("cflags", "build", "Go Compiler Flags")
 		keep = flag.Bool("keep", false, "Keep Intermediary files")
 		ir   = flag.Bool("ir", false, "Stop at IR")
-		// ldf  = flag.String("ldflags", "", "linker flags")
-		ver = flag.Bool("version", false, "Print version number and exit")
+		ver  = flag.Bool("version", false, "Print version number and exit")
 	)
 	flag.Parse()
 

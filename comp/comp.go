@@ -13,6 +13,7 @@ type compiler struct {
 	fp *os.File
 }
 
+// CompileFile creates the necessary files for compiling
 func CompileFile(fname string, parsed *ast.Source) {
 
 	var c compiler
@@ -26,6 +27,7 @@ func CompileFile(fname string, parsed *ast.Source) {
 	c.compSource(parsed)
 }
 
+// compNode checks what the current node is
 func (c *compiler) compNode(node ast.Node) int {
 	switch n := node.(type) {
 	case *ast.BasicLit:
@@ -42,6 +44,7 @@ func (c *compiler) compNode(node ast.Node) int {
 	}
 }
 
+// compBinaryExpr reads the binary expressions from the tree, and optmizes them
 func (c *compiler) compBinaryExpr(b *ast.BinaryExpr) int {
 	var tmp int
 
@@ -75,12 +78,12 @@ func (c *compiler) compBinaryExpr(b *ast.BinaryExpr) int {
 	return tmp
 }
 
+// compSource prints the necessary data into the IR file
 func (c *compiler) compSource(f *ast.Source) {
 	fmt.Fprintln(c.fp, "package main")
 	fmt.Fprintln(c.fp, `import "fmt"`)
 	fmt.Fprintln(c.fp, `import "strconv"`)
 	fmt.Fprintln(c.fp, "func main() {")
 	fmt.Fprintf(c.fp, "fmt.Println(strconv.Itoa(%d))\n", c.compNode(f.Root))
-	// fmt.Fprintln(c.fp, "return 0;")
 	fmt.Fprintln(c.fp, "}")
 }

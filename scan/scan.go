@@ -1,3 +1,4 @@
+// package scan is responsible for retrieving all runes from the text in the source file
 package scan
 
 import (
@@ -6,6 +7,7 @@ import (
 	"github.com/auyer/federal/token"
 )
 
+// Scanner structure stores all data necessary for the scanner
 type Scanner struct {
 	ch      rune
 	offset  int
@@ -23,6 +25,7 @@ func (s *Scanner) Init(file *token.Source, src string) {
 	s.next()
 }
 
+// Scan will analyse a rune and return its features
 func (s *Scanner) Scan() (lit string, tok token.Token, pos token.Pos) {
 	s.skipWhitespace()
 
@@ -74,6 +77,7 @@ func (s *Scanner) Scan() (lit string, tok token.Token, pos token.Pos) {
 	return
 }
 
+// next will move all cursors to the next rune
 func (s *Scanner) next() {
 	s.ch = rune(0)
 	if s.roffset < len(s.src) {
@@ -86,6 +90,7 @@ func (s *Scanner) next() {
 	}
 }
 
+// scanIdentifier will create a string from runes
 func (s *Scanner) scanIdentifier() (string, token.Token, token.Pos) {
 	start := s.offset
 
@@ -100,6 +105,7 @@ func (s *Scanner) scanIdentifier() (string, token.Token, token.Pos) {
 	return lit, token.Lookup(lit), s.file.Pos(start)
 }
 
+// scanIdentifier will create a string from numerical runes
 func (s *Scanner) scanNumber() (string, token.Token, token.Pos) {
 	start := s.offset
 
@@ -113,12 +119,14 @@ func (s *Scanner) scanNumber() (string, token.Token, token.Pos) {
 	return s.src[start:offset], token.INTEGER, s.file.Pos(start)
 }
 
+// skipComment will move the cursors to the first non-comment rune
 func (s *Scanner) skipComment() {
 	for s.ch != '\n' && s.offset < len(s.src)-1 {
 		s.next()
 	}
 }
 
+// skipWhitespace will move the cursors to the first non-space rune
 func (s *Scanner) skipWhitespace() {
 	for unicode.IsSpace(s.ch) {
 		s.next()

@@ -1,14 +1,11 @@
-// Copyright (c) 2014, Rob Thornton
-// All rights reserved.
-// This source code is governed by a Simplied BSD-License. Please see the
-// LICENSE included in this distribution for a copy of the full license
-// or, if one is not included, you may also find a copy at
-// http://opensource.org/licenses/BSD-2-Clause
+// package token is responsible for storing all tokens and basic information on recognizing them.
 
 package token
 
 type Token int
 
+// all constants recieve a integer from the iota declaration.
+// This means it's possible to add new keyworkds without having to change the corresponding numbers.
 const (
 	tokenStart Token = iota
 
@@ -54,7 +51,8 @@ const (
 	tokenEnd
 )
 
-var tok_strings = map[Token]string{
+// tokStrings stores the correspondance between keywords and tokens
+var tokStrings = map[Token]string{
 	EOF:     "EOF",
 	ILLEGAL: "Illegal",
 	COMMENT: "Comment",
@@ -79,44 +77,48 @@ var tok_strings = map[Token]string{
 	ASSIGN:  "=",
 }
 
+// checks if a token is inside the literal block
 func (t Token) IsLiteral() bool {
 	return t > litStart && t < litEnd
 }
 
+// checks if a token is inside the operator block
 func (t Token) IsOperator() bool {
 	return t > opStart && t < opEnd
 }
 
+// checks if a token is inside the keyword block
 func (t Token) IsKeyword() bool {
 	return t > keyStart && t < keyEnd
 }
 
+// checks if a token is the String tokens list
 func Lookup(str string) Token {
 	if str == "true" || str == "false" {
 		return BOOL
 	}
-	if str == "add" {
-		return ADD
-	}
-	if str == "mul" {
-		return MUL
-	}
-	if str == "div" {
-		return DIV
-	}
-	if str == "sub" {
-		return SUB
-	}
-	if str == "rem" {
-		return REM
-	}
-	if str == "compare" {
-		return EQLLIT
-	}
-	if str == "do" {
-		return DO
-	}
-	for t, s := range tok_strings {
+	// if str == "add" {
+	// 	return ADD
+	// }
+	// if str == "mul" {
+	// 	return MUL
+	// }
+	// if str == "div" {
+	// 	return DIV
+	// }
+	// if str == "sub" {
+	// 	return SUB
+	// }
+	// if str == "rem" {
+	// 	return REM
+	// }
+	// if str == "compare" {
+	// 	return EQLLIT
+	// }
+	// if str == "do" {
+	// 	return DO
+	// }
+	for t, s := range tokStrings {
 		if s == str {
 			return t
 		}
@@ -124,10 +126,12 @@ func Lookup(str string) Token {
 	return IDENT
 }
 
+// String function allows printing tokens and basic conversion
 func (t Token) String() string {
-	return tok_strings[t]
+	return tokStrings[t]
 }
 
+// checks if a token is inside the token block
 func (t Token) Valid() bool {
 	return t > tokenStart && t < tokenEnd
 }

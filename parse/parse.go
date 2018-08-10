@@ -1,3 +1,4 @@
+// Package parse manages the Lexical, syntactic and semantic analysis
 package parse
 
 import (
@@ -8,6 +9,7 @@ import (
 	"github.com/auyer/federal/token"
 )
 
+// ParseFile initializes the parser, and makes the first lexical analysis.
 func ParseFile(filename, src string) *ast.Source {
 	var p parser
 	p.init(filename, src)
@@ -19,6 +21,7 @@ func ParseFile(filename, src string) *ast.Source {
 	return f
 }
 
+// the parser structure stores all data that will be accessible during the entire analysis
 type parser struct {
 	file    *token.Source
 	errors  scan.ErrorList
@@ -37,6 +40,7 @@ func (p *parser) addError(msg string) {
 	}
 }
 
+// expect function checks if the current token is the same as expected, and moves on to the next one.
 func (p *parser) expect(tok token.Token) token.Pos {
 	pos := p.pos
 	if p.tok != tok {
@@ -52,14 +56,17 @@ func (p *parser) init(fname, src string) {
 	p.next()
 }
 
+// next function moves the cursors to the next rune
 func (p *parser) next() {
 	p.lit, p.tok, p.pos = p.scanner.Scan()
 }
 
+// parseBasicLit creates a leaf in the AST
 func (p *parser) parseBasicLit() *ast.BasicLit {
 	return &ast.BasicLit{LitPos: p.pos, Kind: p.tok, Lit: p.lit}
 }
 
+// parseBinaryLitExpr creates a node (parent) in the AST with literal operations
 func (p *parser) parseBinaryLitExpr(open token.Pos) *ast.BinaryExpr {
 	pos := p.pos
 	op := p.tok
@@ -84,6 +91,7 @@ func (p *parser) parseBinaryLitExpr(open token.Pos) *ast.BinaryExpr {
 	}
 }
 
+// parseBinaryExpr parseBinaryLitExpr creates a node (parent) in the AST with keyword operations
 func (p *parser) parseBinaryExpr(open token.Pos) *ast.BinaryExpr {
 	pos := p.pos
 	op := p.tok
@@ -109,6 +117,7 @@ func (p *parser) parseBinaryExpr(open token.Pos) *ast.BinaryExpr {
 	}
 }
 
+// parseGenExpr creates the root of the tree.
 func (p *parser) parseGenExpr() ast.Expr {
 	var expr ast.Expr
 
@@ -130,10 +139,12 @@ func (p *parser) parseGenExpr() ast.Expr {
 	return expr
 }
 
+// parseExprParen creates an expression started by a paretesis
 func (p *parser) parseExprParen() ast.Expr {
 	return p.parseExpr(p.expect(token.LPAREN))
 }
 
+// parseExprParen creates an expression started by a do
 func (p *parser) parseExprDo() ast.Expr {
 	p.expect(token.DO)
 	expr := p.parseExpr(p.expect(token.LPAREN))
@@ -141,6 +152,7 @@ func (p *parser) parseExprDo() ast.Expr {
 	return expr
 }
 
+// parseExpr parses a binary expression
 func (p *parser) parseExpr(pos token.Pos) ast.Expr {
 	var expr ast.Expr
 	switch p.tok {
@@ -154,6 +166,7 @@ func (p *parser) parseExpr(pos token.Pos) ast.Expr {
 	return expr
 }
 
+// parseSource begins the parsing process
 func (p *parser) parseSource() *ast.Source {
 	var expr ast.Expr
 	expr = p.parseGenExpr()
