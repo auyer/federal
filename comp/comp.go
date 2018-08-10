@@ -23,7 +23,7 @@ func CompileFile(fname string, parsed *ast.Source) {
 	}
 	defer fp.Close()
 	c.fp = fp
-	c.compFile(parsed)
+	c.compSource(parsed)
 }
 
 func (c *compiler) compNode(node ast.Node) int {
@@ -75,7 +75,7 @@ func (c *compiler) compBinaryExpr(b *ast.BinaryExpr) int {
 	return tmp
 }
 
-func (c *compiler) compFile(f *ast.Source) {
+func (c *compiler) compSource(f *ast.Source) {
 	fmt.Fprintln(c.fp, "package main")
 	fmt.Fprintln(c.fp, `import "fmt"`)
 	fmt.Fprintln(c.fp, `import "strconv"`)
